@@ -24,8 +24,8 @@ public class Hangman extends ConsoleProgram {
 		while (true) {
 			stringGuess = readLine("Your guess: ");
 			if (stringGuess.length() == 1 && Character.isLetter(stringGuess.charAt(0))) {
-				Character.toUpperCase(stringGuess.charAt(0));
 				letterGuess = stringGuess.charAt(0);
+				letterGuess = Character.toUpperCase(letterGuess);
 				break;
 			}
 			else {
@@ -73,9 +73,15 @@ public class Hangman extends ConsoleProgram {
 	}
 	
 	/* Checks to see if the letter is in the secretWord
-	 * that the user is trying to guess */
+	 * that the user is trying to guess.
+	 * If the letter is in the word, fill in all the spots
+	 * where the letter exists (ie replace the "-" in currentWord) */
 	private void checkForLetter(char letter) {
-		
+		for (int i = 0; i < secretWord.length(); i++) {
+			if (secretWord.charAt(i) == letter) {
+				currentWord = currentWord.substring(0,i) + letter + currentWord.substring(i + 1);
+			}
+		}
 	}
 	
 	private void playGame() {
@@ -84,6 +90,7 @@ public class Hangman extends ConsoleProgram {
 		/* Returns a string which is the user's guess of a letter */
 		char letterGuess = askForGuess();
 		checkForLetter(letterGuess);
+		println("The word is: " + secretWord + " (take this out)");
 	}
 	
     public void run() {
