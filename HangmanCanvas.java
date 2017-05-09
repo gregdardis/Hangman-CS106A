@@ -19,7 +19,16 @@ public class HangmanCanvas extends GCanvas {
  * been guessed so far; unguessed letters are indicated by hyphens.
  */
 	public void displayWord(String word) {
-		/* You fill this in */
+		GLabel currentWord = new GLabel(word, currentWordX, currentWordY);
+		currentWord.setFont("Arial-24");
+		add(currentWord);
+		if (currentWord.isVisible()) {
+			remove(currentWord);
+			currentWord = new GLabel(word, currentWordX, currentWordY);
+			currentWord.setFont("Arial-24");
+			add(currentWord);
+		}
+		
 	}
 
 /**
@@ -44,5 +53,7 @@ public class HangmanCanvas extends GCanvas {
 	private static final int HIP_WIDTH = 36;
 	private static final int LEG_LENGTH = 108;
 	private static final int FOOT_LENGTH = 28;
+	private static final double currentWordX = 50;
+	private static final double currentWordY = 370;
 
 }
