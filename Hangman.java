@@ -19,6 +19,9 @@ public class Hangman extends ConsoleProgram {
 	/* Time the game pauses when you win or lose before asking if you want to play again */
 	private static final int PAUSE_TIME = 1200;
 	
+	public static final int APPLICATION_WIDTH = 1000;
+	public static final int APPLICATION_HEIGHT = 800;
+	
 	/* Prompts the user to guess a letter. If their guess isn't just a single letter, 
 	 * asks them to guess again. If their guess fits the criteria, converts
 	 * the letter to an uppercase character and returns it */
@@ -107,6 +110,8 @@ public class Hangman extends ConsoleProgram {
 		
 		if (wasTheLetterThere == false) {
 			remainingGuesses--;
+			canvas.noteIncorrectGuess(letter, NUMBER_OF_GUESSES - remainingGuesses);
+			System.out.println(NUMBER_OF_GUESSES - remainingGuesses);
 			println("There are no " + letter + "'s in the word.");
 			if (remainingGuesses == 0) {
 				loseMessage();
@@ -184,6 +189,7 @@ public class Hangman extends ConsoleProgram {
 	}
 	
     public void run() {
+    	this.resize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
     	boolean wantToPlay = true;
     	boolean didGameEnd;
     	int gameStillGoing = 0;
@@ -211,6 +217,10 @@ public class Hangman extends ConsoleProgram {
     	}
 
 	}
+    
+    public static void main(String[] args) {
+    	new Hangman().start(args);
+    	}
     
     /* Instance variables */
     String currentWord;; /* The word with dashes for unguessed letters, and filled in letters for correct guessed letters */
