@@ -24,7 +24,7 @@ public class HangmanCanvas extends GCanvas {
 	/* Canvas height and width, as well as where the currently being guessed word is placed */
 	private static final int CANVAS_HEIGHT = Hangman.APPLICATION_HEIGHT;
 	private static final int CANVAS_WIDTH = Hangman.APPLICATION_WIDTH / 2;
-	private static final double CURRENT_WORD_X = CANVAS_WIDTH * 0.15;
+	private static final double CURRENT_WORD_X = CANVAS_WIDTH * 0.10;
 	private static final double CURRENT_WORD_Y = CANVAS_HEIGHT * 0.8125;
 	
 	/* Where the letters that have been guessed wrong go */
@@ -113,7 +113,7 @@ public class HangmanCanvas extends GCanvas {
 			}
 			
 			GLabel currentWord = new GLabel(word, CURRENT_WORD_X, CURRENT_WORD_Y);
-			currentWord.setFont("Arial-60");
+			currentWord.setFont("Arial-45");
 			add(currentWord);
 	}
 	
@@ -223,4 +223,3 @@ public class HangmanCanvas extends GCanvas {
 	/* Instance variables */
 	String listOfGuessedLetters = "";
 }
-/* TODO: Add the letters the user has guessed incorrectly to the bottom of the screen */
