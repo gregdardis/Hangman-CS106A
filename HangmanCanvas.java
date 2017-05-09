@@ -7,6 +7,40 @@
 import acm.graphics.*;
 
 public class HangmanCanvas extends GCanvas {
+	
+	/* Constants for the simple version of the picture (in pixels) */
+	private static final int SCAFFOLD_HEIGHT = 360;
+	private static final int BEAM_LENGTH = 144;
+	private static final int ROPE_LENGTH = 18;
+	private static final int HEAD_RADIUS = 36;
+	private static final int BODY_LENGTH = 144;
+	private static final int ARM_OFFSET_FROM_HEAD = 28;
+	private static final int UPPER_ARM_LENGTH = 72;
+	private static final int LOWER_ARM_LENGTH = 44;
+	private static final int HIP_WIDTH = 36;
+	private static final int LEG_LENGTH = 108;
+	private static final int FOOT_LENGTH = 28;
+	
+	/* Canvas height and width, as well as where the currently being guessed word is placed */
+	private static final int CANVAS_HEIGHT = Hangman.APPLICATION_HEIGHT;
+	private static final int CANVAS_WIDTH = Hangman.APPLICATION_WIDTH / 2;
+	private static final double CURRENT_WORD_X = CANVAS_WIDTH * 0.15;
+	private static final double CURRENT_WORD_Y = CANVAS_HEIGHT * 0.8125;
+	
+	/* Where the letters that have been guessed wrong go */
+	private static final double GUESSED_LETTERS_X = CURRENT_WORD_X;
+	private static final double GUESSED_LETTERS_Y = CURRENT_WORD_Y + 50;
+	
+	/* Constants for the position of different parts of the picture */
+	private static final double Y_FOR_TOP_OF_HEAD = ((CANVAS_HEIGHT * 3) / 16) + ROPE_LENGTH;
+	private static final double Y_FOR_BOTTOM_OF_HEAD = (Y_FOR_TOP_OF_HEAD + (HEAD_RADIUS * 2));
+	private static final double Y_FOR_BOTTOM_OF_BODY = Y_FOR_BOTTOM_OF_HEAD + BODY_LENGTH;
+	
+	private static final double X_MIDDLE_OF_HANGMAN = CANVAS_WIDTH / 2;
+	private static final double X_LEFT_VERTICAL_LEG = X_MIDDLE_OF_HANGMAN - HIP_WIDTH;
+	private static final double X_RIGHT_VERTICAL_LEG = X_MIDDLE_OF_HANGMAN + HIP_WIDTH;
+	
+	private static final double Y_FOR_BOTTOM_OF_LEGS = Y_FOR_BOTTOM_OF_BODY + LEG_LENGTH;
 
 	private void drawScaffoldBeamRope() {
 		double topBeamHeight = (CANVAS_HEIGHT * 3) / 16;
@@ -37,6 +71,7 @@ public class HangmanCanvas extends GCanvas {
 /** Resets the display so that only the scaffold appears */
 	public void reset() {
 		removeAll();
+		listOfGuessedLetters = "";
 		drawScaffoldBeamRope();
 	}
 
@@ -45,15 +80,15 @@ public class HangmanCanvas extends GCanvas {
  * state of the game.  The argument string shows what letters have
  * been guessed so far; unguessed letters are indicated by hyphens.
  */
-	public void displayWord(String word) {
-		GObject removeThis = getElementAt(currentWordX, currentWordY);
+	private void addLetterAtBottom(char letter) {
+		GObject removeThis = getElementAt(GUESSED_LETTERS_X, GUESSED_LETTERS_Y);
 		if (removeThis != null) {
 			remove(removeThis);
 		}
-		
-		GLabel currentWord = new GLabel(word, currentWordX, currentWordY);
-		currentWord.setFont("Arial-60");
-		add(currentWord);
+		listOfGuessedLetters = listOfGuessedLetters + letter;
+		GLabel guessedLetters = new GLabel(listOfGuessedLetters, GUESSED_LETTERS_X, GUESSED_LETTERS_Y);
+		guessedLetters.setFont("Arial-30");
+		add(guessedLetters);
 	}
 	
 	public void removeWord(GLabel word) {
@@ -68,7 +103,18 @@ public class HangmanCanvas extends GCanvas {
  */
 	public void noteIncorrectGuess(char letter, int incorrectGuesses) {
 		addNextBodyPart(incorrectGuesses);
-//		addLetterAtBottom(letter);
+		addLetterAtBottom(letter);
+	}
+	
+	public void displayWord(String word) {
+			GObject removeThis = getElementAt(CURRENT_WORD_X, CURRENT_WORD_Y);
+			if (removeThis != null) {
+				remove(removeThis);
+			}
+			
+			GLabel currentWord = new GLabel(word, CURRENT_WORD_X, CURRENT_WORD_Y);
+			currentWord.setFont("Arial-60");
+			add(currentWord);
 	}
 	
 	private void drawHead() {
@@ -174,34 +220,7 @@ public class HangmanCanvas extends GCanvas {
 		}
 	}
 
-/* Constants for the simple version of the picture (in pixels) */
-	private static final int SCAFFOLD_HEIGHT = 360;
-	private static final int BEAM_LENGTH = 144;
-	private static final int ROPE_LENGTH = 18;
-	private static final int HEAD_RADIUS = 36;
-	private static final int BODY_LENGTH = 144;
-	private static final int ARM_OFFSET_FROM_HEAD = 28;
-	private static final int UPPER_ARM_LENGTH = 72;
-	private static final int LOWER_ARM_LENGTH = 44;
-	private static final int HIP_WIDTH = 36;
-	private static final int LEG_LENGTH = 108;
-	private static final int FOOT_LENGTH = 28;
-	
-	/* Canvas height and width, as well as where the currently being guessed word is placed */
-	private static final int CANVAS_HEIGHT = Hangman.APPLICATION_HEIGHT;
-	private static final int CANVAS_WIDTH = Hangman.APPLICATION_WIDTH / 2;
-	private static final double currentWordX = 75;
-	private static final double currentWordY = 650;
-	
-	/* Constants for the position of different parts of the picture */
-	private static final double Y_FOR_TOP_OF_HEAD = ((CANVAS_HEIGHT * 3) / 16) + ROPE_LENGTH;
-	private static final double Y_FOR_BOTTOM_OF_HEAD = (Y_FOR_TOP_OF_HEAD + (HEAD_RADIUS * 2));
-	private static final double Y_FOR_BOTTOM_OF_BODY = Y_FOR_BOTTOM_OF_HEAD + BODY_LENGTH;
-	
-	private static final double X_MIDDLE_OF_HANGMAN = CANVAS_WIDTH / 2;
-	private static final double X_LEFT_VERTICAL_LEG = X_MIDDLE_OF_HANGMAN - HIP_WIDTH;
-	private static final double X_RIGHT_VERTICAL_LEG = X_MIDDLE_OF_HANGMAN + HIP_WIDTH;
-	
-	private static final double Y_FOR_BOTTOM_OF_LEGS = Y_FOR_BOTTOM_OF_BODY + LEG_LENGTH;
+	/* Instance variables */
+	String listOfGuessedLetters = "";
 }
-/* TODO: Go through draw functions and return the piece that is needed by the next function and then pass it to that function. */
+/* TODO: Add the letters the user has guessed incorrectly to the bottom of the screen */
