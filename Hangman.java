@@ -5,11 +5,10 @@
  * Assignment #4.
  */
 
-import acm.graphics.*;
 import acm.program.*;
 import acm.util.*;
 
-import java.awt.*;
+
 
 public class Hangman extends ConsoleProgram {
 
@@ -166,7 +165,6 @@ public class Hangman extends ConsoleProgram {
 	}
 		
 	private boolean playGame() {
-		boolean playAgain = false;
 		boolean didGameEnd = false;
 		boolean didGameEndByWin = false;
 		wordLooksLikeThis();
@@ -192,7 +190,6 @@ public class Hangman extends ConsoleProgram {
     	this.resize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
     	boolean wantToPlay = true;
     	boolean didGameEnd;
-    	int gameStillGoing = 0;
     	while (true) {
         	while (wantToPlay == true) {
         		welcomeMessage();

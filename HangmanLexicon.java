@@ -7,9 +7,6 @@
 
 import acm.util.*;
 import java.io.*;
-import acm.graphics.*;
-import acm.program.*;
-import java.awt.*;
 import java.util.*;
 
 
