@@ -21,6 +21,8 @@ public class Hangman extends ConsoleProgram {
 	public static final int APPLICATION_WIDTH = 1000;
 	public static final int APPLICATION_HEIGHT = 800;
 	
+	private static final String PLAY_AGAIN_MESSAGE = "Play again? y/n: ";
+	
 	/* Prompts the user to guess a letter. If their guess isn't just a single letter, 
 	 * asks them to guess again. If their guess fits the criteria, converts
 	 * the letter to an uppercase character and returns it */
@@ -32,21 +34,18 @@ public class Hangman extends ConsoleProgram {
 			if (stringGuess.length() == 1 && Character.isLetter(stringGuess.charAt(0))) {
 				letterGuess = stringGuess.charAt(0);
 				letterGuess = Character.toUpperCase(letterGuess);
-				break;
-			}
-			else {
+				return letterGuess;
+			} else {
 				println("Guess again. Guesses must be a letter and only one digit.");
 			}
 		}
-		
-		return letterGuess;
 	}
 	
-	private void guessesLeft() {
+	private void printGuessesLeft() {
 		println("You have " + remainingGuesses + " guesses left.");
 	}
 	
-	private void wordLooksLikeThis() {
+	private void printWordLooksLikeThis() {
 		println("The word now looks like this: " + currentWord);
 	}
 	
@@ -93,8 +92,8 @@ public class Hangman extends ConsoleProgram {
 	 * that the user is trying to guess.
 	 * If the letter is in the word, fill in all the spots
 	 * where the letter exists (ie replace the "-" in currentWord). 
-	 * Returns true if the game ended, if the game didn't end returns false*/
-	private boolean checkForLetter(char letter) {
+	 */
+	private void checkForLetter(char letter) {
 		boolean wasTheLetterThere = false;
 		for (int i = 0; i < secretWord.length(); i++) {
 			if (secretWord.charAt(i) == letter) {
@@ -103,21 +102,22 @@ public class Hangman extends ConsoleProgram {
 				canvas.displayWord(currentWord);
 			}
 		}
-		if (wasTheLetterThere == true) {
+		if (wasTheLetterThere) {
 			println("That guess is correct.");
-		}
-		
-		if (wasTheLetterThere == false) {
+		} else {
 			remainingGuesses--;
 			canvas.noteIncorrectGuess(letter, NUMBER_OF_GUESSES - remainingGuesses);
-			System.out.println(NUMBER_OF_GUESSES - remainingGuesses);
 			println("There are no " + letter + "'s in the word.");
-			if (remainingGuesses == 0) {
-				loseMessage();
-				return true;
-			}
 		}
-		return false;
+	}
+	
+	private boolean didYouLose() {
+		if (remainingGuesses == 0) {
+			loseMessage();
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/* Message displayed if the user has won */
@@ -140,41 +140,39 @@ public class Hangman extends ConsoleProgram {
 		if (theyHaveWon == true) {
 			youWinMessage();
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 	
+	private boolean invalidPlayAgainChoice(String userAnswer) {
+		return userAnswer.length() != 1 || (userAnswer.charAt(0) != 'y' && userAnswer.charAt(0) != 'n');
+	}
+	
 	/* Returns true if the user wants to play again, false otherwise */
-	private boolean playAgainMessage() {
+	private boolean wantToPlayAgain() {
 		println(" ");
-		String userAnswer = readLine("Play again? y/n: ");
+		String userAnswer = readLine(PLAY_AGAIN_MESSAGE);
 		println(" ");
-		while (userAnswer.length() > 1 || ( userAnswer.charAt(0) != 'y' && userAnswer.charAt(0) != 'n')) {
+		while (invalidPlayAgainChoice(userAnswer)) {
 			println("Please choose y (yes) or n (no)");
-			userAnswer = readLine("Play again? y/n: ");
+			userAnswer = readLine(PLAY_AGAIN_MESSAGE);
 			println(" ");
 		}
-		if (userAnswer.charAt(0) == 'y') {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return userAnswer.charAt(0) == 'y';
 	}
 		
 	private boolean playGame() {
-		boolean didGameEnd = false;
-		boolean didGameEndByWin = false;
-		wordLooksLikeThis();
-		guessesLeft();
+		printWordLooksLikeThis();
+		printGuessesLeft();
 		/* Returns a string which is the user's guess of a letter */
 		char letterGuess = askForGuess();
-		didGameEnd = checkForLetter(letterGuess);
-		didGameEndByWin = checkIfWin();
+		checkForLetter(letterGuess);
+		
+		boolean didGameEnd = didYouLose() || checkIfWin();
+		
 		//didGameEnd is false when you lose
-		if (didGameEnd == true || didGameEndByWin == true) {
+		if (didGameEnd) {
 			return true;
 		}
 		println(" ");
@@ -183,41 +181,34 @@ public class Hangman extends ConsoleProgram {
 	
 	public void init() {
 		canvas = new HangmanCanvas();
-		add (canvas);
+		add(canvas);
 	}
 	
     public void run() {
     	this.resize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
     	boolean wantToPlay = true;
     	boolean didGameEnd;
-    	while (true) {
-        	while (wantToPlay == true) {
-        		welcomeMessage();
-        		initializeGame();
-        		didGameEnd = false;
-        		wantToPlay = false;
-        		
-        		while (didGameEnd == false) {
-        			// did game end should be true but it's returning false.
-        			didGameEnd = playGame();
-        		}
-        	}
-        	wantToPlay = playAgainMessage();
-        	if (wantToPlay == false) {
-        		println("Goodbye");
-        		pause(5000);
-        		System.exit(0);
-        	}
-        	else {
-        		continue;
-        	}
+    	
+    	while (wantToPlay) {
+    		welcomeMessage();
+    		initializeGame();
+    		didGameEnd = false;
+    		wantToPlay = false;
+    		
+    		while (!didGameEnd) {
+    			didGameEnd = playGame();
+    		}
+    		
+    		wantToPlay = wantToPlayAgain();
     	}
-
+		println("Thanks for playing. Goodbye.");
+		pause(5000);
+		System.exit(0);
 	}
     
     public static void main(String[] args) {
     	new Hangman().start(args);
-    	}
+    }
     
     /* Instance variables */
     String currentWord;; /* The word with dashes for unguessed letters, and filled in letters for correct guessed letters */
@@ -228,4 +219,3 @@ public class Hangman extends ConsoleProgram {
     private HangmanCanvas canvas;
 
 }
-/*TODO: add methods from HangmanCanvas into appropriate places in my Hangman, then start implementing them */

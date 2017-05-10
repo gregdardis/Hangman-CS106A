@@ -21,6 +21,10 @@ public class HangmanCanvas extends GCanvas {
 	private static final int LEG_LENGTH = 108;
 	private static final int FOOT_LENGTH = 28;
 	
+	/* Which arm, leg and foot to draw. -1 means left, +1 means right */
+	private static final int LEFT = -1;
+	private static final int RIGHT = 1;
+	
 	/* Canvas height and width, as well as where the currently being guessed word is placed */
 	private static final int CANVAS_HEIGHT = Hangman.APPLICATION_HEIGHT;
 	private static final int CANVAS_WIDTH = Hangman.APPLICATION_WIDTH / 2;
@@ -129,63 +133,42 @@ public class HangmanCanvas extends GCanvas {
 		add(body);
 	}
 	
-	private void drawArm(String whichArm) {
+	/* -1 means left, 1 means right */
+	private void drawArm(int direction) { // -1 means left, 1 means right
 		double startXForArm = X_MIDDLE_OF_HANGMAN;
 		double startYForArm = Y_FOR_BOTTOM_OF_HEAD + ARM_OFFSET_FROM_HEAD;
 		
-		if (whichArm.equals("left")) {
-			double lowerLeftArmX = startXForArm + UPPER_ARM_LENGTH;
-			
-			GLine upperLeftArm = new GLine(startXForArm, startYForArm, startXForArm + UPPER_ARM_LENGTH, startYForArm);
-			add(upperLeftArm);
-			GLine lowerLeftArm = new GLine(lowerLeftArmX, startYForArm, lowerLeftArmX, startYForArm + LOWER_ARM_LENGTH);
-			add(lowerLeftArm);
-		}
-		else if (whichArm.equals("right")) {
-			double lowerRightArmX = startXForArm - UPPER_ARM_LENGTH;
-			
-			GLine upperRightArm = new GLine(startXForArm, startYForArm, startXForArm - UPPER_ARM_LENGTH, startYForArm);
-			add(upperRightArm);
-			GLine lowerRightArm = new GLine(lowerRightArmX, startYForArm, lowerRightArmX, startYForArm + LOWER_ARM_LENGTH);
-			add(lowerRightArm);
-		}
-	}
-	
-	private void drawLeg(String whichLeg) {
-		double startXForLeg = X_MIDDLE_OF_HANGMAN;
-		double startYForLeg = Y_FOR_BOTTOM_OF_BODY;
+		double lowerArmX = startXForArm + (direction * UPPER_ARM_LENGTH);
 		
-		if (whichLeg.equals("left")) {
-			GLine upperLeftLeg = new GLine(startXForLeg, startYForLeg, startXForLeg - HIP_WIDTH, startYForLeg);
-			add(upperLeftLeg);
-			GLine lowerLeftLeg = new GLine(X_LEFT_VERTICAL_LEG, startYForLeg, X_LEFT_VERTICAL_LEG, startYForLeg + LEG_LENGTH);
-			add(lowerLeftLeg);
-		}
-		else if (whichLeg.equals("right")) {
-			GLine upperRightLeg = new GLine(startXForLeg, startYForLeg, startXForLeg + HIP_WIDTH, startYForLeg);
-			add(upperRightLeg);
-			GLine lowerRightLeg = new GLine(X_RIGHT_VERTICAL_LEG, startYForLeg, X_RIGHT_VERTICAL_LEG, startYForLeg + LEG_LENGTH);
-			add(lowerRightLeg);
-		}
+		GLine upperArm = new GLine(startXForArm, startYForArm, startXForArm + (direction * UPPER_ARM_LENGTH), startYForArm);
+		GLine lowerArm = new GLine(lowerArmX, startYForArm, lowerArmX, startYForArm + LOWER_ARM_LENGTH);
+		add(upperArm);
+		add(lowerArm);
+	}
+	/* -1 means left, 1 means right */
+	private void drawLeg(int direction) { 
+		double startXForUpperLeg = X_MIDDLE_OF_HANGMAN;
+		double startYForUpperLeg = Y_FOR_BOTTOM_OF_BODY;
+		double startXForLowerLeg = X_MIDDLE_OF_HANGMAN + (direction * HIP_WIDTH);
+		
+		GLine upperLeg = new GLine(startXForUpperLeg, startYForUpperLeg, startXForUpperLeg + (direction * HIP_WIDTH), startYForUpperLeg);
+		GLine lowerLeg = new GLine(startXForLowerLeg, startYForUpperLeg, startXForLowerLeg, startYForUpperLeg + LEG_LENGTH);
+		add(upperLeg);
+		add(lowerLeg);
+		
 	}
 	
-	private void drawFoot(String whichFoot) {
-		if (whichFoot.equals("left")) {
-			GLine leftFoot = new GLine(X_LEFT_VERTICAL_LEG, Y_FOR_BOTTOM_OF_LEGS, X_LEFT_VERTICAL_LEG - FOOT_LENGTH, Y_FOR_BOTTOM_OF_LEGS);
-			add(leftFoot);
-		}
-		else if (whichFoot.equals("right")) {
-			GLine rightFoot = new GLine(X_RIGHT_VERTICAL_LEG, Y_FOR_BOTTOM_OF_LEGS, X_RIGHT_VERTICAL_LEG + FOOT_LENGTH, Y_FOR_BOTTOM_OF_LEGS);
-			add(rightFoot);
-		}
+	private void drawFoot(int direction) {
+		double startXForFoot = X_MIDDLE_OF_HANGMAN + (direction * HIP_WIDTH);
+		
+		GLine foot = new GLine(startXForFoot, Y_FOR_BOTTOM_OF_LEGS, startXForFoot + (direction * FOOT_LENGTH), Y_FOR_BOTTOM_OF_LEGS);
+		add(foot);
+		
 	}
 	
 	/* Adds the next body part based on how many incorrect guesses the user has made.
 	 * Head -> body -> left arm -> right arm -> left leg -> right leg -> left foot -> right foot */
 	private void addNextBodyPart(int incorrectGuesses) {
-		String whichArm = "left";
-		String whichLeg = "left";
-		String whichFoot = "left";
 		switch(incorrectGuesses) {
 			case 1:
 				drawHead();
@@ -194,25 +177,22 @@ public class HangmanCanvas extends GCanvas {
 				drawBody();
 				break;
 			case 3:
-				drawArm(whichArm);
+				drawArm(LEFT);
 				break;
 			case 4:
-				whichArm = "right";
-				drawArm(whichArm);
+				drawArm(RIGHT);
 				break;
 			case 5:
-				drawLeg(whichLeg);
+				drawLeg(LEFT);
 				break;
 			case 6:
-				whichLeg = "right";
-				drawLeg(whichLeg);
+				drawLeg(RIGHT);
 				break;
 			case 7:
-				drawFoot(whichFoot);
+				drawFoot(LEFT);
 				break;
 			case 8: 
-				whichFoot = "right";
-				drawFoot(whichFoot);
+				drawFoot(RIGHT);
 				break;
 			default:
 				System.out.println("Error, too many incorrect guesses, nothing left to draw");

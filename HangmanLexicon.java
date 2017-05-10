@@ -27,8 +27,7 @@ public class HangmanLexicon {
 				hangmanLexiconArrayList.add(line);
 			}
 			rd.close();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new ErrorException(ex);
 		}
 	}
@@ -39,9 +38,8 @@ public class HangmanLexicon {
 		while (rd == null) {
 			try {
 				rd = new BufferedReader(new FileReader("HangmanLexicon.txt"));
-			}
-			catch (IOException ex) {
-				System.out.println("bad file");
+			} catch (IOException ex) {
+				System.out.println("bad file name");
 			}
 		}
 		return rd;
